@@ -1,75 +1,70 @@
 # Chapter3
 Assignment
-> if(!file.exists("./data")){dir.create("./data")}
-> Url <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
-> download.file(Url, destfile ="./data/Dataset.zip")
-trying URL 'https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip'
-Content type 'application/zip' length 62556944 bytes (59.7 MB)
-downloaded 59.7 MB
+Version 1.0
+==================================================================
+Jorge L. Reyes-Ortiz, Davide Anguita, Alessandro Ghio, Luca Oneto.
+Smartlab - Non Linear Complex Systems Laboratory
+DITEN - Università degli Studi di Genova.
+Via Opera Pia 11A, I-16145, Genoa, Italy.
+activityrecognition@smartlab.ws
+www.smartlab.ws
+==================================================================
 
-> unzip(zipfile="./data/Dataset.zip", exdir="./data")
-> path <- file.path("./data", "UCI HAR Dataset")
-> f <- list.files(path, recursive = TRUE)
-> f
- [1] "activity_labels.txt"                         
- [2] "features.txt"                                
- [3] "features_info.txt"                           
- [4] "README.txt"                                  
- [5] "test/Inertial Signals/body_acc_x_test.txt"   
- [6] "test/Inertial Signals/body_acc_y_test.txt"   
- [7] "test/Inertial Signals/body_acc_z_test.txt"   
- [8] "test/Inertial Signals/body_gyro_x_test.txt"  
- [9] "test/Inertial Signals/body_gyro_y_test.txt"  
-[10] "test/Inertial Signals/body_gyro_z_test.txt"  
-[11] "test/Inertial Signals/total_acc_x_test.txt"  
-[12] "test/Inertial Signals/total_acc_y_test.txt"  
-[13] "test/Inertial Signals/total_acc_z_test.txt"  
-[14] "test/subject_test.txt"                       
-[15] "test/X_test.txt"                             
-[16] "test/y_test.txt"                             
-[17] "train/Inertial Signals/body_acc_x_train.txt" 
-[18] "train/Inertial Signals/body_acc_y_train.txt" 
-[19] "train/Inertial Signals/body_acc_z_train.txt" 
-[20] "train/Inertial Signals/body_gyro_x_train.txt"
-[21] "train/Inertial Signals/body_gyro_y_train.txt"
-[22] "train/Inertial Signals/body_gyro_z_train.txt"
-[23] "train/Inertial Signals/total_acc_x_train.txt"
-[24] "train/Inertial Signals/total_acc_y_train.txt"
-[25] "train/Inertial Signals/total_acc_z_train.txt"
-[26] "train/subject_train.txt"                     
-[27] "train/X_train.txt"                           
-[28] "train/y_train.txt"  
-## Read the Data                         
-> TestActivity <- read.table(file.path(path, "test", "Y_test.txt"), header = FALSE)
-> TrainActivity <- read.table(file.path(path, "train", "Y_train.txt"), header = FALSE)
-> TestSubject <- read.table(file.path(path, "test", "subject_test.txt"), header = FALSE)
-> TrainSubject <- read.table(file.path(path, "train", "subject_train.txt"), header = FALSE)
-> TestFeatures <- read.table(file.path(path, "test", "X_test.txt"), header = FALSE)
-> TrainFeatures <- read.table(file.path(path, "train", "X_train.txt"), header = FALSE)
-##Merge the Data
-> Subject <- rbind(TrainSubject,TestSubject)
-> Activity <- rbind(TrainActivity, TestActivity)
-> Features <- rbind(TrainFeatures, TestFeatures)
-> names(Subject) <- c("subject")
-> names(Activity) <- c("activity") 
-## Extracts the measurements on the mean and standard deviation
-> dataFeaturesNames <- read.table(file.path(path, "features.txt"), head =FALSE)
-> names(Features) <- dataFeaturesNames$V2
-> Combinedata <- cbind(Subject, Activity)
-> Data <- cbind(Features, Combinedata)
-## Uses descriptive activity names to name the activities
-> activitydes <- read.table(file.path(path, "activity_labels.txt"), header = FALSE)
-> head(Data$activity, 30)
-## label the dataset
-> names(Data) <- gsub("^t" , "time", names(Data))
-> names(Data) <- gsub("^f", "frequency", names(Data))
-> names(Data) <- gsub ("Acc","Accelerometer", names(Data))
-> names(Data) <- gsub("Gyro", "Gyroscope", names(Data))
-> names(Data) <- gsub("Mag", "Magnitude",names(Data))
-> names(Data) <- gsub("BodyBody", "Body", names(Data))
-> names(Data)
-##Create second independent tidy data set
-> library(plyr)
-> dt2 <- aggregate(. ~subject + activity, Data, mean)
-> dt2<- dt2[order(dt2$subject, dt2$activity),]
-> write.table(dt2,file = "tidydata.txt", row.name=FALSE)
+The experiments have been carried out with a group of 30 volunteers within an age bracket of 19-48 years. Each person performed six activities (WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING) wearing a smartphone (Samsung Galaxy S II) on the waist. Using its embedded accelerometer and gyroscope, we captured 3-axial linear acceleration and 3-axial angular velocity at a constant rate of 50Hz. The experiments have been video-recorded to label the data manually. The obtained dataset has been randomly partitioned into two sets, where 70% of the volunteers was selected for generating the training data and 30% the test data. 
+
+The sensor signals (accelerometer and gyroscope) were pre-processed by applying noise filters and then sampled in fixed-width sliding windows of 2.56 sec and 50% overlap (128 readings/window). The sensor acceleration signal, which has gravitational and body motion components, was separated using a Butterworth low-pass filter into body acceleration and gravity. The gravitational force is assumed to have only low frequency components, therefore a filter with 0.3 Hz cutoff frequency was used. From each window, a vector of features was obtained by calculating variables from the time and frequency domain. See 'features_info.txt' for more details. 
+
+For each record it is provided:
+======================================
+
+- Triaxial acceleration from the accelerometer (total acceleration) and the estimated body acceleration.
+- Triaxial Angular velocity from the gyroscope. 
+- A 561-feature vector with time and frequency domain variables. 
+- Its activity label. 
+- An identifier of the subject who carried out the experiment.
+
+The dataset includes the following files:
+=========================================
+
+- 'README.txt'
+
+- 'features_info.txt': Shows information about the variables used on the feature vector.
+
+- 'features.txt': List of all features.
+
+- 'activity_labels.txt': Links the class labels with their activity name.
+
+- 'train/X_train.txt': Training set.
+
+- 'train/y_train.txt': Training labels.
+
+- 'test/X_test.txt': Test set.
+
+- 'test/y_test.txt': Test labels.
+
+The following files are available for the train and test data. Their descriptions are equivalent. 
+
+- 'train/subject_train.txt': Each row identifies the subject who performed the activity for each window sample. Its range is from 1 to 30. 
+
+- 'train/Inertial Signals/total_acc_x_train.txt': The acceleration signal from the smartphone accelerometer X axis in standard gravity units 'g'. Every row shows a 128 element vector. The same description applies for the 'total_acc_x_train.txt' and 'total_acc_z_train.txt' files for the Y and Z axis. 
+
+- 'train/Inertial Signals/body_acc_x_train.txt': The body acceleration signal obtained by subtracting the gravity from the total acceleration. 
+
+- 'train/Inertial Signals/body_gyro_x_train.txt': The angular velocity vector measured by the gyroscope for each window sample. The units are radians/second. 
+
+Notes: 
+======
+- Features are normalized and bounded within [-1,1].
+- Each feature vector is a row on the text file.
+
+For more information about this dataset contact: activityrecognition@smartlab.ws
+
+License:
+========
+Use of this dataset in publications must be acknowledged by referencing the following publication [1] 
+
+[1] Davide Anguita, Alessandro Ghio, Luca Oneto, Xavier Parra and Jorge L. Reyes-Ortiz. Human Activity Recognition on Smartphones using a Multiclass Hardware-Friendly Support Vector Machine. International Workshop of Ambient Assisted Living (IWAAL 2012). Vitoria-Gasteiz, Spain. Dec 2012
+
+This dataset is distributed AS-IS and no responsibility implied or explicit can be addressed to the authors or their institutions for its use or misuse. Any commercial use is prohibited.
+
+Jorge L. Reyes-Ortiz, Alessandro Ghio, Luca Oneto, Davide Anguita. November 2012.
